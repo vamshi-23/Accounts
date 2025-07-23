@@ -1,5 +1,6 @@
 package com.easybank.accounts.controller;
 
+import com.easybank.accounts.dto.AccountsContactInfoDTO;
 import com.easybank.accounts.dto.CustomerDTO;
 import com.easybank.accounts.dto.ErrorResponseDTO;
 import com.easybank.accounts.dto.ResponseDTO;
@@ -12,7 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +27,7 @@ import static com.easybank.accounts.constants.AccountsConstants.*;
 
 @RestController
 @RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Validated
 @Tag(
         name = "CRUD Rest APIs for Accounts in Easy Bank",
@@ -31,7 +35,16 @@ import static com.easybank.accounts.constants.AccountsConstants.*;
 )
 public class AccountsController {
 
-    private IAccountsService accountsService;
+    private final IAccountsService accountsService;
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private AccountsContactInfoDTO accountsContactInfoDTO;
 
     @Operation(
             summary = "Create a new customer account",
@@ -117,5 +130,40 @@ public class AccountsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDTO(STATUS_417, MESSAGE_417_DELETE));
         }
+    }
+
+    @Operation(summary = "Get build info", description = "Get build info of the application")
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/version")
+    public ResponseEntity<String> getBuildVersion() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(buildVersion);
+    }
+    @Operation(summary = "Get Java version info", description = "Get Java info of the application")
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/java-version")
+    public ResponseEntity<String> getJavaVersion() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(environment.getProperty("java.version"));
+    }
+
+    @Operation(summary = "Get contact info", description = "Get contact info for the application")
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountsContactInfoDTO> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountsContactInfoDTO);
     }
 }

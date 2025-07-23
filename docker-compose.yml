@@ -1,6 +1,6 @@
 services:
   accounts:
-    image: "vamshikrishna01/accounts:s4"
+    image: "vamshikrishna01/accounts:s6"
     container_name: accounts-ms
     ports:
       - "8080:8080"
@@ -11,7 +11,7 @@ services:
     networks:
       - easybank
   loans:
-    image: "vamshikrishna01/loans:s4"
+    image: "vamshikrishna01/loans:s6"
     container_name: loans-ms
     ports:
       - "8090:8090"
@@ -22,7 +22,7 @@ services:
     networks:
       - easybank
   cards:
-    image: "vamshikrishna01/cards:s4"
+    image: "vamshikrishna01/cards:s6"
     container_name: cards-ms
     ports:
       - "9000:9000"
